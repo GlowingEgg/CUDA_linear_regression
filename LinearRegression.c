@@ -30,7 +30,9 @@ int main(int argc, char **argv){
 	for(int i = 0; i < features - 1; i++){
 		meanAndRange[i] = malloc(2 * sizeof(double));
 	}
-	/*meanNormalization();         GOTTA MAKE THIS WORK!!!!!!*/
+
+	/*meanNormalization();         GOTTA MAKE THIS WORK NEXT!!!!!!*/
+
 	/*****************************************************************************/
 	/*This part will be inside the gradient descent function*/
 	cost = costFunction(theta, X, Y, features, examples);
