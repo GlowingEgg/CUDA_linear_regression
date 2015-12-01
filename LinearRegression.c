@@ -7,6 +7,7 @@
 
 double costFunction();
 void meanNormalization();
+void gradientDescent();
 
 int main(int argc, char **argv){
 	char* filename = argv[1];
@@ -26,18 +27,37 @@ int main(int argc, char **argv){
 	for(int i = 0; i < features; i++){
 		theta[i] = 0;
 	}
+	theta[0] = 1;
 	double **meanAndRange = malloc((features - 1) * sizeof(double*));
 	for(int i = 0; i < features - 1; i++){
 		meanAndRange[i] = malloc(2 * sizeof(double));
 	}
+	
+	/*meanNormalization(X, Y, meanAndRange, features, examples);*/     
 
-	/*meanNormalization();         GOTTA MAKE THIS WORK NEXT!!!!!!*/
 
-	/*****************************************************************************/
-	/*This part will be inside the gradient descent function*/
-	cost = costFunction(theta, X, Y, features, examples);
-	printf("%f\n", cost);
-	/*****************************************************************************/
+	gradientDescent(X, Y, theta, meanAndRange, features, examples);
+	int *values = malloc((features - 1) * sizeof(int));
+	values[0] = 1;
+	char val[5];
+	/*Print the learned formula*/
+	printf("Learned function: %f", theta[0]);
+	for(int i = 1; i < features; i++){
+		printf(" + %f(x%d)",theta[i], i);
+	}
+	printf("\n");
+	/*Obtain experimental values*/
+	for(int i = 1; i < features ; i++){
+		printf("Value for x%d:", i);
+		scanf("%s", val);
+		values[i] = atoi(val);
+	}
+	/*Print out the estimate for given values*/
+	float output = 0;
+	for(int i = 0; i < features; i++){
+		output += values[i] * theta[i];
+	}
+	printf("\nOutput: %f\n", output);
 }
 
 double costFunction(int *theta, double **X, double *Y, int features, int examples){
@@ -66,12 +86,12 @@ void meanNormalization(double **X, double **Y, double **meanAndRange, int featur
 			if(X[j][i] > max){
 				max = X[j][i];
 			}
-			if(X[i][j] < min){
+			if(X[j][i] < min){
 				min = X[j][i];
 			}
 			mean += X[j][i];
 		}
-		mean /= features - 1;
+		mean /=  examples;
 		meanAndRange[i -1][0] = mean;
 		meanAndRange[i - 1][1] = max - min;
 	}
@@ -80,4 +100,43 @@ void meanNormalization(double **X, double **Y, double **meanAndRange, int featur
 			X[i][j] = (X[i][j] - meanAndRange[j - 1][0]) / meanAndRange[j - 1][1];
 		}
 	}
+}
+void gradientDescent(double **X, double *Y, double *theta, double **meanAndRange, int features, int examples){
+	char iters[5];
+	int iterations;
+	double alpha = 0.0001;
+	double hypothesis[examples];
+	double runningSum;
+	double gradients[examples];
+	double intermediateCost;
+	printf("Gradient descent iterations(1-4 digits): ");
+	scanf("%s", iters);
+	iterations = atoi(iters);
+	printf("Still Good\n");
+	/*Iterates gradient descent iterations times*/
+	for(int i = 0; i < iterations; i++){
+		/*initialize all the gradients to zero*/
+		for(int i = 0; i < features; i++){
+			gradients[i] = 0;
+		}
+		/*Sets the values of the hypothesis, based on the current values of theta*/
+		for(int godDamn = 0; godDamn < examples; godDamn++){
+			runningSum = 0;
+			for(int fuck = 0; fuck < features; fuck++){
+				runningSum += theta[fuck] * X[godDamn][fuck]; 
+			}
+			hypothesis[godDamn] = runningSum;
+		}
+		/*Actual gradient descent step- adjusts the values of theta by descending the gradient*/
+		for(int j = 0; j < examples; j++){
+			intermediateCost = (hypothesis[j] - Y[j]);
+			for(int godDamn = 0; godDamn < features; godDamn++){
+				gradients[godDamn] += intermediateCost * X[j][godDamn];
+			}
+			for(int k = 0; k < features;k++){
+				theta[k] -= (alpha * gradients[k])/examples; 
+			}
+		}
+	}
+
 }
