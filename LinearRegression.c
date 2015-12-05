@@ -109,10 +109,10 @@ void gradientDescent(double **X, double *Y, double *theta, double **meanAndRange
 	double runningSum;
 	double gradients[examples];
 	double intermediateCost;
+	double previousCost = 0;
 	printf("Gradient descent iterations(1-4 digits): ");
 	scanf("%s", iters);
 	iterations = atoi(iters);
-	printf("Still Good\n");
 	/*Iterates gradient descent iterations times*/
 	for(int i = 0; i < iterations; i++){
 		/*initialize all the gradients to zero*/
@@ -130,6 +130,13 @@ void gradientDescent(double **X, double *Y, double *theta, double **meanAndRange
 		/*Actual gradient descent step- adjusts the values of theta by descending the gradient*/
 		for(int j = 0; j < examples; j++){
 			intermediateCost = (hypothesis[j] - Y[j]);
+			if(intermediateCost > previousCost){
+				alpha /= 2;
+			}
+			else{
+				alpha += .0001;
+			}
+			previousCost = intermediateCost;
 			for(int godDamn = 0; godDamn < features; godDamn++){
 				gradients[godDamn] += intermediateCost * X[j][godDamn];
 			}
