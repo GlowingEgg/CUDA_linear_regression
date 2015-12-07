@@ -3,6 +3,7 @@
 #include <string.h>
 #include <float.h>
 #include <math.h>
+#include <time.h>
 #include "csvparse.c"
 
 double costFunction();
@@ -35,7 +36,9 @@ int main(int argc, char **argv){
 	
 	/*meanNormalization(X, Y, meanAndRange, features, examples);*/     
 
-
+	clock_t begin, end;
+	begin = clock();
+	double timeElapsed;
 	gradientDescent(X, Y, theta, meanAndRange, features, examples);
 	int *values = malloc((features - 1) * sizeof(int));
 	values[0] = 1;
@@ -46,6 +49,9 @@ int main(int argc, char **argv){
 		printf(" + %f(x%d)",theta[i], i);
 	}
 	printf("\n");
+	end = clock();
+	timeElapsed = (double)(end - begin) / CLOCKS_PER_SEC;
+	printf("Elapsed Time: %f\n", timeElapsed);
 	/*Obtain experimental values*/
 	for(int i = 1; i < features ; i++){
 		printf("Value for x%d:", i);
@@ -104,7 +110,8 @@ void meanNormalization(double **X, double **Y, double **meanAndRange, int featur
 void gradientDescent(double **X, double *Y, double *theta, double **meanAndRange, int features, int examples){
 	char iters[5];
 	int iterations;
-	double alpha = 0.0001;
+	double alpha = 0.001;
+	double absCost;
 	double hypothesis[examples];
 	double runningSum;
 	double gradients[examples];
@@ -130,19 +137,20 @@ void gradientDescent(double **X, double *Y, double *theta, double **meanAndRange
 		/*Actual gradient descent step- adjusts the values of theta by descending the gradient*/
 		for(int j = 0; j < examples; j++){
 			intermediateCost = (hypothesis[j] - Y[j]);
-			if(intermediateCost > previousCost){
-				alpha /= 2;
-			}
-			else{
-				alpha += .0001;
-			}
-			previousCost = intermediateCost;
 			for(int godDamn = 0; godDamn < features; godDamn++){
 				gradients[godDamn] += intermediateCost * X[j][godDamn];
 			}
 			for(int k = 0; k < features;k++){
 				theta[k] -= (alpha * gradients[k])/examples; 
 			}
+			absCost = fabs(intermediateCost);
+			if(absCost > previousCost){
+				alpha /= 2;
+			}
+			else{
+				alpha += .001;
+			}
+			previousCost = absCost;
 		}
 	}
 
