@@ -1,2 +1,3 @@
 # MPI_linear_regression
 Linear regression, implemented using the Message Passing Interface to distribute computation across processes. The regression is done using batch gradient descent and parallelized through variation of the learning rate and the rate at which the learning rate is adaptively modified.
+This program was done as an independent research project for an AI class, so I will include the rough research abstract to explain the motivation and argue in its favor. Soon will follow a normal equation implementation, which will use a QR decomposition to parallelize, as I believe that is the current standard. Benchmarking and runtime comparisons will follow soon after.
